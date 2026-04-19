@@ -11,7 +11,7 @@ public class DatabaseService {
     private final RestTemplate restTemplate;
 
     // Curl command for access to wholesaler database
-    private final String db = "https://pmaier.eu.pythonanywhere.com/wss/product/";
+    private final String db = "http://localhost:5000/wss/product/";
 
     public DatabaseService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
