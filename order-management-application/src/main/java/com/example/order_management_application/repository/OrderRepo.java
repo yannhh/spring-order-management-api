@@ -36,7 +36,7 @@ public class OrderRepo {
         }
     };
 
-    // finding the order using the customer id
+    // Finding the order using the customer id
     public Optional<Order> findOrderById(int id) {
         String sql = "SELECT * FROM customer_orders WHERE id = ?";
         try {
@@ -47,26 +47,26 @@ public class OrderRepo {
         }
     }
 
-    // finding a customer using their id
+    // Finding a customer using their id
     public List<Order> findOrderByCustomerId(int customerId) {
         String sql = "SELECT * FROM customer_orders WHERE customer_id = ?";
         return jdbcTemplate.query(sql, orderRowMapper, customerId);
     }
 
-    // select all query to get all orders from all customers
+    // Select all query to get all orders from all customers
     public List<Order> findAllOrders() {
         String sql = "SELECT * FROM customer_orders";
         return jdbcTemplate.query(sql, orderRowMapper);
     }
 
-    // sql query to save the order
+    // SQL query to save the order
     public int saveOrder(Order order) {
         String sql = "INSERT INTO customer_orders (customer_id, product_id, quantity, status) VALUES (?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
                 order.getCustomerId(), order.getProductId(), order.getQuantity(), order.getStatus().name());
     }
 
-    // updates status field
+    // Updates status field
     public int updateStatus(int orderId, OrderStatus updatedStatus) {
         String sql = "UPDATE customer_orders SET status = ? WHERE id = ?";
         return jdbcTemplate.update(sql, updatedStatus.name(), orderId);

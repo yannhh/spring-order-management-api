@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Product {
 
-    // [AI] AI suggested I change these to wrapper classes because the primitive
+    // Changed these to wrapper classes because the primitive
     // data types have problems parsing and handling null values from database
     private Integer id;
     private String item_description;

@@ -10,7 +10,7 @@ public class DatabaseService {
 
     private final RestTemplate restTemplate;
 
-    // The curl command for access to wholesaler database
+    // Curl command for access to wholesaler database
     private final String db = "https://pmaier.eu.pythonanywhere.com/wss/product/";
 
     public DatabaseService(RestTemplate restTemplate) {

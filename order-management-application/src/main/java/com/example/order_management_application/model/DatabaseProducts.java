@@ -6,8 +6,8 @@ public class DatabaseProducts {
 
     private String id;
 
-    @JsonProperty("in_stock") // [AI] suggested i make it a json property because my stock variable would
-                              // always be 0
+    @JsonProperty("in_stock") // Json property because my stock variable would always be 0
+    
     private int in_stock;
 
     private double price;

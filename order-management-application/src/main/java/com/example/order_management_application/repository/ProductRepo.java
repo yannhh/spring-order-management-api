@@ -8,7 +8,7 @@ import com.example.order_management_application.model.Product;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional; // mitigate null pointer exceptions  
+import java.util.Optional; // Mitigate null pointer exceptions  
 
 @Repository
 public class ProductRepo {
@@ -19,7 +19,7 @@ public class ProductRepo {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // row mapper to convert the result into product object
+    // Row mapper to convert the result into product object
     private final RowMapper<Product> productRowMapper = new RowMapper<Product>() {
         @Override
         public Product mapRow(ResultSet result, int rowNum) throws SQLException {
@@ -32,13 +32,13 @@ public class ProductRepo {
         }
     };
 
-    // return all products from database
+    // Return all products from database
     public List<Product> findAllProducts() {
         String sql = "SELECT * FROM product";
         return jdbcTemplate.query(sql, productRowMapper);
     }
 
-    // find a single product using the id
+    // Find a single product using the id
     public Optional<Product> findProductId(int id) {
         String sql = "SELECT * FROM product WHERE id = ?";
         try {
@@ -49,15 +49,13 @@ public class ProductRepo {
         }
     }
 
-    // to update price of a product
+    // To update price of a product
     public int updatePrice(Integer id, Double updatedPrice) {
         String sql = "UPDATE product SET price = ? WHERE id = ?";
         return jdbcTemplate.update(sql, updatedPrice, id);
     }
 
-    // [AI] prompted ai for help here because my SQL value parameters were incorrect
-    // and not passing values properly
-    // add new product
+    // Add new product
     public int addProduct(Product product) {
         String sql = "INSERT INTO product (item_description, price, databaseId) VALUES (?, ?, ?)";
         return jdbcTemplate.update(sql, product.getItemDesc(), product.getPrice(), product.getDatabaseId());

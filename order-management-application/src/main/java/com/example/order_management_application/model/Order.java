@@ -63,21 +63,21 @@ public class Order {
 
     @Override
     public boolean equals(Object o) {
-        // comparing the object to itself to ensure they are the same
+        // Comparing the object to itself to ensure they are the same
         if (this == o)
             return true;
 
-        // checks if the other object is null or is of different type
+        // Checks if the other object is null or is of different type
         // if its true, they cannot be equal
         if (o == null || getClass() != o.getClass())
             return false;
 
-        // typecasting the object to order type
+        // Typecasting the object to order type
         Order order = (Order) o;
 
-        // im using Objects.equals here because I was getting null pointer exceps if ID
+        // Using Objects.equals here because I was getting null pointer exceps if ID
         // is null
-        // this is to check if the fields match
+        // This is to check if the fields match
         return Objects.equals(quantity, order.quantity) &&
                 Objects.equals(id, order.id) &&
                 Objects.equals(customerId, order.customerId) &&
@@ -86,14 +86,14 @@ public class Order {
     }
 
     @Override
-    // this is also using override
-    // same fields are hashed for the hashmap
+    // This is also using override
+    // Same fields are hashed for the hashmap
     public int hashCode() {
         return Objects.hash(id, customerId, productId, quantity, status);
     }
 
-    // debug method
-    // im printing the ids here and the quantity for terminal
+    // Debug method
+    // Printing the ids here and the quantity for terminal
     @Override
     public String toString() {
         return "Order{id=" + id + ", customerId=" + customerId + ", quantity=" + quantity + "}";

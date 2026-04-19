@@ -50,23 +50,21 @@
     <script>
         const URL = "http://localhost:8080/api";
 
-        //[AI] suggested that i use this global map to show item description instead of hardcoding product into each javascript
+        //Global map to show item description instead of hardcoding product into each javascript
         let productMap = {};
 
-        //[AI] asked for help how to get the key from the homepage without the need of cookies or a session
+        //Get the key from the homepage without the need of cookies or a session
         const params = new URLSearchParams(window.location.search);
         const ADMIN_KEY = params.get("key");
 
-        //this is the security check so if theres no password it redirects the user back to index
+        //Security check; if theres no password it redirects the user back to index
         if (!ADMIN_KEY) {
             alert("Admin Password not found.");
             window.location.href = "index.html";
         }
 
-        //[AI] suggested that i use a function instead of hardcoding it directly into each request
         function getKey() { return ADMIN_KEY; }
 
-        //[AI] generated structure of this request and asked for help how to build a table using the JSON response
         async function loadAdminProducts() {
             const res = await fetch(`${URL}/products`);
             const data = await res.json();
@@ -74,7 +72,6 @@
             data.forEach(p => {
                 productMap[p.id] = p.itemDesc;
 
-                //[AI] helped with syntax for having the delete button directly into the table
                 html += `<tr>
                     <td>${p.id}</td><td>${p.itemDesc}</td><td>&pound;${p.price}</td><td>${p.databaseId || '-'}</td>
                     <td><button class="btn btn-danger" onclick="deleteProduct(${p.id})">Delete</button></td>
@@ -83,7 +80,7 @@
             document.getElementById("adminProdList").innerHTML = html + "</table>";
         }
 
-        //adds new product
+        //Adds new product
         async function addProduct() {
             const descInput = document.getElementById("newDesc").value;
             const priceInput = document.getElementById("newPrice").value;
@@ -91,11 +88,11 @@
 
             const product = {
                 itemDesc: descInput,
-                price: parseFloat(priceInput), //parsing here because my price wouldnt return properly
+                price: parseFloat(priceInput), //Parsing here because my price wouldnt return properly
                 databaseId: extIdInput
             };
 
-            //admin key is passed in the header using the function made earlier for security
+            //Admin key is passed in the header using the function made earlier for security
             const res = await fetch(`${URL}/products`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "adminKey": getKey() },
@@ -142,7 +139,6 @@
             data.forEach(o => {
                 const productName = productMap[o.productId] || `ID: ${o.productId}`;
 
-                //[AI] helped with syntax to properly show the ship button if only pending
                 html += `<tr>
                     <td>${o.id}</td><td>${o.customerId}</td>
                     <td>${productName}</td> <td>${o.quantity}</td>
@@ -162,9 +158,8 @@
             alert(await res.text());
             loadAllOrders();
         }
-
-        //[AI] helped with the syntax 
-        //extra feature to check if the product is profitable or not
+ 
+        //Checks if the product is profitable or not
         async function checkRevenue() {
             const id = document.getElementById("revCustId").value;
             if (!id) return alert("Please enter a Customer ID");

@@ -39,20 +39,19 @@
     <script>
         const URL = "http://localhost:8080/api";
 
-        //[AI] suggested that i use this global map to show item description instead of hardcoding product into each javascript
+        //Global map to show item description instead of hardcoding product into each javascript
         let productMap = {};
 
-        //[AI] provided syntax and how to get the string values from my table using the JSON responses
+        //Get the string values from my table using the JSON responses
         async function loadProducts() {
             const res = await fetch(`${URL}/products`);
             const data = await res.json();
 
             let html = "<table><tr><th>ID</th><th>Item</th><th>Price</th></tr>";
             data.forEach(p => {
-                //stores the name in map for lookup
+                //Stores the name in map for lookup
                 productMap[p.id] = p.itemDesc;
 
-                //[AI] suggest i used "&pound" instead of the pound text because it was showing encoding issues
                 html += `<tr><td>${p.id}</td><td>${p.itemDesc}</td><td>&pound;${p.price}</td></tr>`;
             });
             document.getElementById("productList").innerHTML = html + "</table>";
@@ -75,7 +74,7 @@
             document.getElementById("orderResult").innerText = `Status: ${res.status} - ${text}`;
         }
 
-        //function to allows customer to view their order using their ID
+        //Allows customer to view their order using their ID
         async function viewOrders() {
             const id = document.getElementById("orderCustomerId").value;
             const res = await fetch(`${URL}/customers/${id}/orders`);
@@ -86,7 +85,6 @@
             data.forEach(o => {
                 const productName = productMap[o.productId] || `ID: ${o.productId}`;
 
-                //[AI] provided the template on how to get the order status with colors
                 html += `<tr>
                     <td>${o.id}</td>
                     <td>${productName}</td> <td>${o.quantity}</td>
@@ -101,10 +99,10 @@
             if (!confirm("Are you sure you want to cancel your order?")) return;
             const res = await fetch(`${URL}/orders/${id}/cancel`, { method: "POST" });
             alert(await res.text());
-            viewOrders(); //refreshes the list with the products
+            viewOrders(); //Refreshes the list with the products
         }
 
-        //this loads the products as soon as the page is opened, so the customer doesnt have to click anything else
+        //Loads the products as soon as the page is opened, so the customer doesnt have to click anything else
         loadProducts();
     </script>
 </body>
