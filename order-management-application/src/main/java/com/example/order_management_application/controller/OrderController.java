@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 public class OrderController {
 
-    // my adminKey password for the HTTP prompt onclick
+    // adminKey password for the HTTP prompt onclick
     private static final String adminKey = "Ryan!23";
 
     private final ProductRepo productRepository;
