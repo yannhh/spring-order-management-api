@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Welcome to Ryan's Drop Ship Web Service</h1>
+
+    <div class="card-container">
+
+        <div class="card" onclick="window.location.href='customer.html'">
+            <h2>Customer</h2>
+        </div>
+
+        <div class="card" onclick="adminLogin()">
+            <h2>Admin</h2>
+        </div>
+
+    </div>
+</body>
+
+<script>
+    function adminLogin() {
+        let password = prompt("Enter Admin Password:");
+        if (password) {
+            window.location.href = `admin.html?key=${password}`;
+        }
+    }
+</script>
+
+</html>

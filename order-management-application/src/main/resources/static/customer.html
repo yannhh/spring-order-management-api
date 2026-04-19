@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Customer Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="page-container">
+        <div style="display: flex; justify-content: space-between;">
+            <h1>Customer Page</h1>
+            <a href="index.html" class="btn"> Back</a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Available Products</h2>
+        <button class="btn" onclick="loadProducts()">Refresh</button>
+        <div id="productList"></div>
+    </div>
+
+    <div class="section">
+        <h2>Place Order</h2>
+        <input type="number" id="customerId" placeholder="Enter your customer ID">
+        <input type="number" id="productId" placeholder="Enter the product ID">
+        <input type="number" id="quantity" placeholder="Quantity">
+        <button class="btn" onclick="placeOrder()">Buy</button>
+        <p id="orderResult"></p>
+    </div>
+
+    <div class="section">
+        <h2>Active Orders</h2>
+        <input type="number" id="orderCustomerId" placeholder="Enter Customer ID">
+        <button class="btn" onclick="viewOrders()">View Orders</button>
+        <div id="orderList"></div>
+    </div>
+
+    <script>
+        const URL = "http://localhost:8080/api";
+
+        //[AI] suggested that i use this global map to show item description instead of hardcoding product into each javascript
+        let productMap = {};
+
+        //[AI] provided syntax and how to get the string values from my table using the JSON responses
+        async function loadProducts() {
+            const res = await fetch(`${URL}/products`);
+            const data = await res.json();
+
+            let html = "<table><tr><th>ID</th><th>Item</th><th>Price</th></tr>";
+            data.forEach(p => {
+                //stores the name in map for lookup
+                productMap[p.id] = p.itemDesc;
+
+                //[AI] suggest i used "&pound" instead of the pound text because it was showing encoding issues
+                html += `<tr><td>${p.id}</td><td>${p.itemDesc}</td><td>&pound;${p.price}</td></tr>`;
+            });
+            document.getElementById("productList").innerHTML = html + "</table>";
+        }
+
+        //POST request handler for creating the order
+        async function placeOrder() {
+            const order = {
+                customerId: document.getElementById("customerId").value,
+                productId: document.getElementById("productId").value,
+                quantity: document.getElementById("quantity").value
+            };
+
+            const res = await fetch(`${URL}/orders`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(order)
+            });
+            const text = await res.text();
+            document.getElementById("orderResult").innerText = `Status: ${res.status} - ${text}`;
+        }
+
+        //function to allows customer to view their order using their ID
+        async function viewOrders() {
+            const id = document.getElementById("orderCustomerId").value;
+            const res = await fetch(`${URL}/customers/${id}/orders`);
+            if (!res.ok) return alert("Customer does not exist!");
+            const data = await res.json();
+
+            let html = "<table><tr><th>Order ID</th><th>Product</th><th>Qty</th><th>Status</th><th>Action</th></tr>";
+            data.forEach(o => {
+                const productName = productMap[o.productId] || `ID: ${o.productId}`;
+
+                //[AI] provided the template on how to get the order status with colors
+                html += `<tr>
+                    <td>${o.id}</td>
+                    <td>${productName}</td> <td>${o.quantity}</td>
+                    <td style="color:${o.status === 'PENDING' ? 'orange' : 'green'}">${o.status}</td>
+                    <td>${o.status === 'PENDING' ? `<button class='btn btn-danger' onclick='cancelOrder(${o.id})'>Cancel</button>` : '-'}</td>
+                </tr>`;
+            });
+            document.getElementById("orderList").innerHTML = html + "</table>";
+        }
+
+        async function cancelOrder(id) {
+            if (!confirm("Are you sure you want to cancel your order?")) return;
+            const res = await fetch(`${URL}/orders/${id}/cancel`, { method: "POST" });
+            alert(await res.text());
+            viewOrders(); //refreshes the list with the products
+        }
+
+        //this loads the products as soon as the page is opened, so the customer doesnt have to click anything else
+        loadProducts();
+    </script>
+</body>
+
+</html>

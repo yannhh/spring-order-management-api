@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Operator Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="page-container">
+        <div style="display:flex; justify-content:space-between;">
+            <h1>Admin</h1>
+            <a href="index.html" class="btn">Logout</a>
+        </div>
+
+        <div class="section">
+            <h2>Manage Inventory</h2>
+
+            <h3>Add Product</h3>
+            <input type="text" id="newDesc" placeholder="Description">
+            <input type="number" id="newPrice" placeholder="Price (GBP)">
+            <input type="text" id="newExtId" placeholder="Enter Unique ID">
+            <button class="btn" onclick="addProduct()">Add</button>
+
+            <h3 style="margin-top:20px;">Update Price</h3>
+            <input type="number" id="updateProdId" placeholder="Product ID">
+            <input type="number" id="updatePriceVal" placeholder="New Price (GBP)">
+            <button class="btn" onclick="updatePrice()">Update</button>
+
+            <h3 style="margin-top:20px;">Current List</h3>
+            <button class="btn" onclick="loadAdminProducts()">Refresh List</button>
+            <div id="adminProdList"></div>
+        </div>
+
+        <div class="section" style="border-bottom: none;">
+            <h2>Manage Orders</h2>
+            <button class="btn" onclick="loadAllOrders()">View All Orders</button>
+            <div id="ordersContainer"></div>
+        </div>
+
+        <div class="section">
+            <h2>Customer Value</h2>
+            <input type="number" id="revCustId" placeholder="Customer ID">
+            <button class="btn" onclick="checkRevenue()">Check Revenue</button>
+            <p id="revenueResult" style="font-weight: bold; margin-top: 10px; color: chocolate;"></p>
+        </div>
+    </div>
+
+    <script>
+        const URL = "http://localhost:8080/api";
+
+        //[AI] suggested that i use this global map to show item description instead of hardcoding product into each javascript
+        let productMap = {};
+
+        //[AI] asked for help how to get the key from the homepage without the need of cookies or a session
+        const params = new URLSearchParams(window.location.search);
+        const ADMIN_KEY = params.get("key");
+
+        //this is the security check so if theres no password it redirects the user back to index
+        if (!ADMIN_KEY) {
+            alert("Admin Password not found.");
+            window.location.href = "index.html";
+        }
+
+        //[AI] suggested that i use a function instead of hardcoding it directly into each request
+        function getKey() { return ADMIN_KEY; }
+
+        //[AI] generated structure of this request and asked for help how to build a table using the JSON response
+        async function loadAdminProducts() {
+            const res = await fetch(`${URL}/products`);
+            const data = await res.json();
+            let html = "<table><tr><th>ID</th><th>Description</th><th>Price</th><th>Product ID</th><th>Action</th></tr>";
+            data.forEach(p => {
+                productMap[p.id] = p.itemDesc;
+
+                //[AI] helped with syntax for having the delete button directly into the table
+                html += `<tr>
+                    <td>${p.id}</td><td>${p.itemDesc}</td><td>&pound;${p.price}</td><td>${p.databaseId || '-'}</td>
+                    <td><button class="btn btn-danger" onclick="deleteProduct(${p.id})">Delete</button></td>
+                </tr>`;
+            });
+            document.getElementById("adminProdList").innerHTML = html + "</table>";
+        }
+
+        //adds new product
+        async function addProduct() {
+            const descInput = document.getElementById("newDesc").value;
+            const priceInput = document.getElementById("newPrice").value;
+            const extIdInput = document.getElementById("newExtId").value;
+
+            const product = {
+                itemDesc: descInput,
+                price: parseFloat(priceInput), //parsing here because my price wouldnt return properly
+                databaseId: extIdInput
+            };
+
+            //admin key is passed in the header using the function made earlier for security
+            const res = await fetch(`${URL}/products`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "adminKey": getKey() },
+                body: JSON.stringify(product)
+            });
+            alert(await res.text());
+            loadAdminProducts();
+        }
+
+        async function updatePrice() {
+            const id = document.getElementById("updateProdId").value;
+            const price = document.getElementById("updatePriceVal").value;
+            const res = await fetch(`${URL}/products/${id}/price`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "adminKey": getKey() },
+                body: JSON.stringify({ price: parseFloat(price) })
+            });
+            alert(await res.text());
+            loadAdminProducts();
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm("Delete Product " + id + "?")) return;
+            const res = await fetch(`${URL}/products/${id}`, {
+                method: "DELETE",
+                headers: { "adminKey": getKey() }
+            });
+            alert(await res.text());
+            loadAdminProducts();
+        }
+
+        async function loadAllOrders() {
+            const res = await fetch(`${URL}/orders`, { headers: { "adminKey": getKey() } });
+
+            //handler for unauthorized activity
+            if (res.status === 401) {
+                alert("Invalid Admin Key");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const data = await res.json();
+            let html = "<table><tr><th>Order ID</th><th>Cust ID</th><th>Product</th><th>Qty</th><th>Status</th><th>Action</th></tr>";
+            data.forEach(o => {
+                const productName = productMap[o.productId] || `ID: ${o.productId}`;
+
+                //[AI] helped with syntax to properly show the ship button if only pending
+                html += `<tr>
+                    <td>${o.id}</td><td>${o.customerId}</td>
+                    <td>${productName}</td> <td>${o.quantity}</td>
+                    <td style="font-weight:bold;">${o.status}</td>
+                    <td>${o.status === 'PENDING' ? `<button class="btn" onclick="shipOrder(${o.id})">Ship</button>` : '-'}</td>
+                </tr>`;
+            });
+            document.getElementById("ordersContainer").innerHTML = html + "</table>";
+        }
+
+        async function shipOrder(id) {
+            const res = await fetch(`${URL}/orders/${id}/status`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "adminKey": getKey() },
+                body: JSON.stringify({ status: "SHIPPED" })
+            });
+            alert(await res.text());
+            loadAllOrders();
+        }
+
+        //[AI] helped with the syntax 
+        //extra feature to check if the product is profitable or not
+        async function checkRevenue() {
+            const id = document.getElementById("revCustId").value;
+            if (!id) return alert("Please enter a Customer ID");
+
+            const res = await fetch(`${URL}/customers/${id}/revenue`, {
+                headers: { "adminKey": getKey() }
+            });
+
+            if (res.status === 401) return alert("Access Denied");
+            if (!res.ok) return alert("Customer not found");
+
+            const data = await res.json();
+            document.getElementById("revenueResult").innerText =
+                `Customer ${data.customerId} Total Spent: Pounds: ${data.totalRevenue}`;
+        }
+
+        loadAdminProducts();
+    </script>
+</body>
+
+</html>

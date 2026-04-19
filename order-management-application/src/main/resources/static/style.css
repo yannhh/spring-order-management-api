@@ -1,0 +1,138 @@
+body {
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+    background-color: beige;
+    padding: 50px;
+    margin: 0;
+}
+
+h1 {
+    color: #483c32;
+    margin-bottom: 40px;
+}
+
+h2,
+h3 {
+    color: #7b3f00;
+}
+
+a {
+    text-decoration: none;
+    color: #7b3f00;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+p.subheader {
+    font-size: 50px;
+    color: #7b3f00;
+    margin-bottom: 40px;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: chocolate;
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 40px;
+    width: 200px;
+    box-shadow: 0 2px 5px;
+    cursor: pointer;
+    transition: all 0.2 ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px;
+    background-color: #d2691e;
+}
+
+.card h2 {
+    color: white;
+    margin-top: 0;
+}
+
+.page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff8dc;
+    padding: 40px;
+    border: 2px solid;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px;
+    text-align: left;
+}
+
+.section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px;
+}
+
+.input {
+    padding: 10px;
+    margin: 5px;
+    border: 2px solid;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #483c32;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.btn {
+    background-color: #8b4513;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Times New Roman', Times, serif;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #a0522d;
+}
+
+.btn-danger {
+    background-color: #b22222;
+}
+
+.btn-danger:hover {
+    background-color: #8b0000;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: white;
+    border: 1px solid;
+}
+
+th {
+    background-color: chocolate;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 2px solid;
+    color: #483c32;
+}
+
+tr:nth-child(even) {
+    background-color: #fff8dc;
+}
