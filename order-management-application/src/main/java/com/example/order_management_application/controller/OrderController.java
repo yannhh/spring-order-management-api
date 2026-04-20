@@ -1,5 +1,6 @@
 package com.example.order_management_application.controller;
 
+import com.example.order_management_application.OrderManagementApplication;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.CollectionModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import java.util.stream.Collectors;
 
 import com.example.order_management_application.model.Order;
 import com.example.order_management_application.model.OrderStatus;
@@ -32,6 +38,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 public class OrderController {
 
+    private final OrderManagementApplication orderManagementApplication;
+
     // adminKey password for the HTTP prompt onclick
     private static final String adminKey = "Ryan!23";
 
@@ -43,11 +51,12 @@ public class OrderController {
     // Constructor for product repository and the external wholesale database
     // service
     public OrderController(ProductRepo productRepository, CustomerRepo customerRepository, OrderRepo orderRepository,
-            DatabaseService databaseService) {
+            DatabaseService databaseService, OrderManagementApplication orderManagementApplication) {
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.databaseService = databaseService;
+        this.orderManagementApplication = orderManagementApplication;
     }
 
     // Security check for admin access
@@ -58,8 +67,19 @@ public class OrderController {
 
     // Show all products to the customer
     @GetMapping("/products")
-    public List<Product> showProducts() {
-        return productRepository.findAllProducts();
+    public CollectionModel<EntityModel<Product>> showProducts() {
+
+        // Fetch products and wrap each one in an entity model with self link
+        List<EntityModel<Product>> products = productRepository.findAllProducts().stream()
+        .map(product -> EntityModel.of(product,
+            linkTo(methodOn(OrderController.class).showProducts()).withRel("products")
+        ))
+        .collect(Collectors.toList());
+
+        // Wraps entire collection and adds a self link to the list itself
+        return CollectionModel.of(products,
+            linkTo(methodOn(OrderController.class).showProducts()).withSelfRel()
+        );
     }
 
     // Create order to also check the stock of wholesaler database and
@@ -104,23 +124,44 @@ public class OrderController {
         }
 
         // If all check statements are good, the status will update to pending and save
-        // to
-        // my database
         newOrder.setStatus(OrderStatus.PENDING);
         orderRepository.saveOrder(newOrder);
-        return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
+
+        EntityModel <Order> orderModel = EntityModel.of(newOrder,
+            // Link to view all orders for specific customer
+            linkTo(methodOn(OrderController.class).getCustomerOrder(newOrder.getCustomerId())).withRel("customer-orders"),
+
+            // Link showing how to cancel the specific order
+            linkTo(methodOn(OrderController.class).cancelOrder(newOrder.getId())).withRel("cancel-order")
+        );
+        return new ResponseEntity<>(orderModel, HttpStatus.CREATED);
     }
 
     // Customers can view their order
     @GetMapping("/customers/{id}/orders")
-    public ResponseEntity<List<Order>> getCustomerOrder(@PathVariable int id) {
+    public ResponseEntity<?> getCustomerOrder(@PathVariable int id) {
 
         // Validation if the customer exists, this will just find the id
         if (customerRepository.findCustomerId(id).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         List<Order> orders = orderRepository.findOrderByCustomerId(id);
-        return new ResponseEntity<>(orders, HttpStatus.OK);
+
+        // Wrapping each order in an entity model and then attaching a cancel link to it
+        List <EntityModel<Order>> orderModels = orders.stream() // stream().map() dynamically generates the exact URL needed to cancel the specific order
+        .map(order -> EntityModel.of(order,
+            linkTo(methodOn(OrderController.class).cancelOrder(order.getId())).withRel("cancel-order")
+        ))
+        .collect(Collectors.toList());
+
+        // Wrapping the entire collection and adding a self link to the list itself
+        // Takes newly mapped list of orders and packs them together
+        // The attached self link helps so the client knows the exact URL that generated the list
+        CollectionModel<EntityModel<Order>> collectionsModel = CollectionModel.of(orderModels,
+            linkTo(methodOn(OrderController.class).getCustomerOrder(id)).withSelfRel()
+        );
+
+        return new ResponseEntity<>(collectionsModel, HttpStatus.OK);
     }
 
     // Customer can cancel their order, IF it hasn't been shipped
