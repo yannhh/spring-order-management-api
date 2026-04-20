@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,14 +31,17 @@ import com.example.order_management_application.repository.ProductRepo;
 
 // External database connection
 import com.example.order_management_application.service.DatabaseService;
+import com.example.order_management_application.model.Customer;
 import com.example.order_management_application.model.DatabaseProducts;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:5173")
 public class OrderController {
 
+    @SuppressWarnings("unused")
     private final OrderManagementApplication orderManagementApplication;
 
     // adminKey password for the HTTP prompt onclick
@@ -286,5 +290,11 @@ public class OrderController {
 
         return new ResponseEntity<>(Map.of("customerId", id, "totalRevenue", revenue), HttpStatus.OK);
     }
+
+    @GetMapping("/customers/{id}")
+    public Customer getCustomerById(@PathVariable int id) {
+    return customerRepository.findCustomerId(id)
+        .orElseThrow(() -> new RuntimeException("Customer not found")) ;
+}
 
 }
