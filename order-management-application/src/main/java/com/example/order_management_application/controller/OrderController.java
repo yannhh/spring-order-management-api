@@ -141,7 +141,7 @@ public class OrderController {
         }
 
         orderRepository.updateStatus(id, OrderStatus.CANCELLED);
-        return new ResponseEntity<>("Order " + id + "Cancelled", HttpStatus.OK);
+        return new ResponseEntity<>("Order " + id + " Cancelled", HttpStatus.OK);
     }
 
     // Operator add product
@@ -225,7 +225,7 @@ public class OrderController {
         }
 
         productRepository.updatePrice(id, updatedPrice);
-        return new ResponseEntity<>("Product " + id + "price updated", HttpStatus.OK);
+        return new ResponseEntity<>("Product " + id + " price updated", HttpStatus.OK);
     }
 
     // Calculate the revenue using SQL query in CustomerRepo
