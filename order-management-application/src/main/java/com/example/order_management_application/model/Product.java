@@ -10,15 +10,17 @@ public class Product {
     private String item_description;
     private Double price;
     private String databaseId;
+    private String imageURL;
 
     public Product() {
     }
 
-    public Product(Integer id, String item_description, Double price, String databaseId) {
+    public Product(Integer id, String item_description, Double price, String databaseId, String imageURL) {
         this.id = id;
         this.item_description = item_description;
         this.price = price;
         this.databaseId = databaseId;
+        this.imageURL = imageURL;
     }
 
     public Integer getId() {
@@ -51,6 +53,14 @@ public class Product {
 
     public void setDatabaseId(String databaseId) {
         this.databaseId = databaseId;
+    }
+
+    public String getImageURL () {
+        return imageURL;
+    }
+
+    public void setImageURL (String imageURL) {
+        this.imageURL = imageURL;
     }
 
     @Override

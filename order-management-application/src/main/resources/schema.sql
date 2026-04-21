@@ -13,7 +13,8 @@ CREATE TABLE product (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     item_description VARCHAR(255) NOT NULL, 
     price DECIMAL(10, 2) NOT NULL,
-    databaseId VARCHAR (255)
+    databaseId VARCHAR (255),
+    image_url VARCHAR (255)
 );
 
 CREATE TABLE customer_orders (

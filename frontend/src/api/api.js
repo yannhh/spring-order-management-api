@@ -66,6 +66,9 @@ export const fetchProducts = async () => {
     category: p.category || "other",
     stock_status: p.stockStatus || "in_stock",
     is_active: p.isActive !== undefined ? p.isActive : true,
+    image_url:
+      p.image_url ||
+      "https://thetoolshedinc.com/wp-content/uploads/2014/11/tsinterior1.jpg",
   }));
 };
 
@@ -74,6 +77,7 @@ export const createProduct = async (productData) => {
   const payload = {
     itemDesc: productData.name,
     price: productData.retail_price,
+    imageURL: productData.imageURL,
     sku: productData.sku,
     category: productData.category,
     stockStatus: productData.stock_status,
@@ -84,18 +88,29 @@ export const createProduct = async (productData) => {
     body: JSON.stringify(payload),
   });
   if (!response.ok) throw new Error("Failed to create product");
-  return response.json();
+
+  return response.text();
 };
 
 // Updating a product
 export const updateProduct = async (id, productData) => {
+  const payload = {
+    itemDesc: productData.name,
+    price: productData.retail_price,
+    imageURL: productData.image_url,
+    sku: productData.sku,
+    category: productData.category,
+    stockStatus: productData.stock_status,
+  };
+
   const response = await fetch(`${api_URL}/products/${id}`, {
     method: "PUT",
     headers: DEFAULT_HEADERS,
-    body: JSON.stringify(productData),
+    body: JSON.stringify(payload),
   });
   if (!response.ok) throw new Error("Failed to update product");
-  return response.json();
+
+  return response.text();
 };
 
 // Fetching Order

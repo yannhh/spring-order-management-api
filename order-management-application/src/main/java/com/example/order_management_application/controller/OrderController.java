@@ -273,6 +273,21 @@ public class OrderController {
         return new ResponseEntity<>("Product " + id + " price updated", HttpStatus.OK);
     }
 
+    @PutMapping("/products/{id}")
+    public ResponseEntity<String> updateProduct (@PathVariable int id, @RequestBody Product productUpdate, HttpServletRequest request) {
+        if (!adminAccess(request)) {
+            return new ResponseEntity<>("Error: Admin key was not found", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (productRepository.findProductId(id).isEmpty()) {
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        }
+
+        productRepository.updateProduct(id, productUpdate);
+        return new ResponseEntity<>("Product " + id + " updated", HttpStatus.OK);
+
+    }
+
     // Calculate the revenue using SQL query in CustomerRepo
     // class
     // Operator view customer revenue

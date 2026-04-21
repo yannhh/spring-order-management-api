@@ -40,7 +40,7 @@ export default function MyOrders() {
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["my-orders", user?.email],
-    queryFn: () => fetchOrders,
+    queryFn: fetchOrders,
     enabled: !!user?.email,
   });
 
@@ -52,8 +52,15 @@ export default function MyOrders() {
     },
   });
 
-  const filtered =
-    tab === "all" ? orders : orders.filter((o) => o.status === tab);
+  const filtered = orders.filter((order) => {
+    // Ensuring the order actually belongs to the user that is logged in
+    const isMyOrder = order.customer_email === user?.email;
+
+    // The order also matches the currently selected tab
+    const selectedTab = tab === "all" || order.status === tab;
+
+    return isMyOrder && selectedTab;
+  });
 
   return (
     <div>

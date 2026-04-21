@@ -55,6 +55,12 @@ public class ProductRepo {
         return jdbcTemplate.update(sql, updatedPrice, id);
     }
 
+    // To update product information
+    public int updateProduct(Integer id, Product product) {
+        String sql = "UPDATE product SET item_description = ?, price = ?, image_url = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, product.getItemDesc(), product.getPrice(), product.getImageURL(), id);
+    }
+
     // Add new product
     public int addProduct(Product product) {
         String sql = "INSERT INTO product (item_description, price, databaseId) VALUES (?, ?, ?)";
