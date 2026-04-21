@@ -10,8 +10,8 @@ export default function Login() {
   const handleLogin = (role) => {
     if (!userId) return alert("Enter User ID");
 
-    localStorage.setItem("userId");
-    localStorage.setItem("userRole");
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("userRole", role);
 
     navigate(role === "admin" ? "/admin" : "/products");
     window.location.reload();

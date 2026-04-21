@@ -25,15 +25,16 @@ export const currentUser = async () => {
     const customer = await response.json();
 
     return {
-      id: customer.id,
-      name: customer.name,
-      email: customer.email,
-      role: savedRole,
+      id: savedId,
+      name: savedRole === "admin" ? "Admin Ryan" : "Customer User",
+      email: `customer${savedId}@email.com`,
+      role: savedRole || "Customer",
     };
   } catch (error) {
     return {
       id: savedId,
       name: savedRole === "admin" ? "Admin Ryan" : "Customer User",
+      email: `customer${savedId}@email.com`,
       role: savedRole || "Customer",
     };
   }
