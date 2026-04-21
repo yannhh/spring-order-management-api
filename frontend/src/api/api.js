@@ -16,7 +16,7 @@ export const currentUser = async () => {
   if (!savedId) return null;
 
   try {
-    const response = await fetch(`${api_URL}/users/${savedId}`, {
+    const response = await fetch(`${api_URL}/customers/${savedId}`, {
       headers: DEFAULT_HEADERS,
     });
 
@@ -67,7 +67,7 @@ export const fetchProducts = async () => {
     stock_status: p.stockStatus || "in_stock",
     is_active: p.isActive !== undefined ? p.isActive : true,
     image_url:
-      p.image_url ||
+      p.imageUrl ||
       "https://thetoolshedinc.com/wp-content/uploads/2014/11/tsinterior1.jpg",
   }));
 };
@@ -77,7 +77,7 @@ export const createProduct = async (productData) => {
   const payload = {
     itemDesc: productData.name,
     price: productData.retail_price,
-    imageURL: productData.imageURL,
+    imageUrl: productData.image_url,
     sku: productData.sku,
     category: productData.category,
     stockStatus: productData.stock_status,
@@ -97,7 +97,7 @@ export const updateProduct = async (id, productData) => {
   const payload = {
     itemDesc: productData.name,
     price: productData.retail_price,
-    imageURL: productData.image_url,
+    imageUrl: productData.image_url,
     sku: productData.sku,
     category: productData.category,
     stockStatus: productData.stock_status,

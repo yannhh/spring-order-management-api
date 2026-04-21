@@ -10,7 +10,10 @@ public class Product {
     private String item_description;
     private Double price;
     private String databaseId;
-    private String imageURL;
+    private String imageUrl;
+    private String category;
+    private String sku;
+    private String stockStatus;
 
     public Product() {
     }
@@ -20,7 +23,7 @@ public class Product {
         this.item_description = item_description;
         this.price = price;
         this.databaseId = databaseId;
-        this.imageURL = imageURL;
+        this.imageUrl = imageURL;
     }
 
     public Integer getId() {
@@ -55,12 +58,34 @@ public class Product {
         this.databaseId = databaseId;
     }
 
-    public String getImageURL () {
-        return imageURL;
+    public String getImageUrl() { 
+        return imageUrl; }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl; }
+
+    public String getCategory() {
+        return category;
+    }
+    
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public void setImageURL (String imageURL) {
-        this.imageURL = imageURL;
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public String getStockStatus() {
+        return stockStatus;
+    }
+
+    public String setStockStatus (String stockStatus) {
+        return this.stockStatus = stockStatus;
     }
 
     @Override

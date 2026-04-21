@@ -14,7 +14,10 @@ CREATE TABLE product (
     item_description VARCHAR(255) NOT NULL, 
     price DECIMAL(10, 2) NOT NULL,
     databaseId VARCHAR (255),
-    image_url VARCHAR (255)
+    image_url TEXT, 
+    category VARCHAR(255),
+    sku VARCHAR(255),
+    stock_status VARCHAR(255)
 );
 
 CREATE TABLE customer_orders (

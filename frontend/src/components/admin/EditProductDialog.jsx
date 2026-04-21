@@ -71,7 +71,7 @@ export default function EditProductDialog({
     if (product?.id) {
       await updateProduct(product.id, data);
     } else {
-      await createProduct(productData);
+      await createProduct(data);
     }
     setSaving(false);
     toast({ title: product?.id ? "Product updated" : "Product created" });

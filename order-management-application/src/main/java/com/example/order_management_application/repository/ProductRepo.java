@@ -5,8 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.example.order_management_application.model.Product;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional; // Mitigate null pointer exceptions  
 
@@ -20,17 +18,18 @@ public class ProductRepo {
     }
 
     // Row mapper to convert the result into product object
-    private final RowMapper<Product> productRowMapper = new RowMapper<Product>() {
-        @Override
-        public Product mapRow(ResultSet result, int rowNum) throws SQLException {
-            Product product = new Product();
-            product.setId(result.getInt("id"));
-            product.setItemDesc(result.getString("item_description"));
-            product.setPrice(result.getDouble("price"));
-            product.setDatabaseId(result.getString("databaseId"));
-            return product;
-        }
-    };
+    private final RowMapper<Product> productRowMapper = (result, rowNum) -> {
+    Product p = new Product();
+    p.setId(result.getInt("id"));
+    p.setItemDesc(result.getString("item_description"));
+    p.setPrice(result.getDouble("price"));
+    p.setDatabaseId(result.getString("databaseId"));
+    p.setImageUrl(result.getString("image_url")); 
+    p.setCategory(result.getString("category"));
+    p.setSku(result.getString("sku"));
+    p.setStockStatus(result.getString("stock_status"));
+    return p;
+};
 
     // Return all products from database
     public List<Product> findAllProducts() {
@@ -57,14 +56,30 @@ public class ProductRepo {
 
     // To update product information
     public int updateProduct(Integer id, Product product) {
-        String sql = "UPDATE product SET item_description = ?, price = ?, image_url = ? WHERE id = ?";
-        return jdbcTemplate.update(sql, product.getItemDesc(), product.getPrice(), product.getImageURL(), id);
+        String sql = "UPDATE product SET item_description = ?, price = ?, image_url = ?, category = ?, sku = ?, stock_status = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, 
+            product.getItemDesc(), 
+            product.getPrice(), 
+            product.getImageUrl(), 
+            product.getCategory(), 
+            product.getSku(), 
+            product.getStockStatus(), 
+            id
+        );
     }
 
     // Add new product
     public int addProduct(Product product) {
-        String sql = "INSERT INTO product (item_description, price, databaseId) VALUES (?, ?, ?)";
-        return jdbcTemplate.update(sql, product.getItemDesc(), product.getPrice(), product.getDatabaseId());
+        String sql = "INSERT INTO product (item_description, price, databaseId, image_url, category, sku, stock_status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        return jdbcTemplate.update(sql, 
+            product.getItemDesc(), 
+            product.getPrice(), 
+            product.getDatabaseId(),
+            product.getImageUrl(),
+            product.getCategory(),
+            product.getSku(),
+            product.getStockStatus()
+        );
     }
 
     // delete product using product id
